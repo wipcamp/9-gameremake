@@ -1,6 +1,7 @@
 
     var player;
     var enemy;
+    var enemys;
     var count;
     
 
@@ -51,37 +52,19 @@
             //cursors
             this.cursors = this.input.keyboard.createCursorKeys(); 
             this.spacebar = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-            
-                /*var num = game.rnd.integerInRange(0, 1);
-                if(num == 0){
-                    x = 0;
-                }else if(num==1){
-                    x=800;
-                }
-                this.enemy = game.add.sprite(0,450,'enemy');
-                game.physics.arcade.enable(this.enemy);
-                this.enemy.body.bounce.y = 0.25;
-                this.enemy.body.gravity.y=980;
-                if (this.x == 0) {
-                this.enemy.body.velocity.x = 200;
-                }else if(this.x == 800){
-                    this.enemy.body.gravity.x= -100;
-                }
-                this.enemy.body.collideWorldBounds = true;
-                this.enemy.animations.add('right', [3, 4, 5], 10, true);
-                this.enemy.animations.add('left', [9, 10, 11], 10, true);
-                this.enemy.frame = 6;*/
                 
+            this.enemys = game.add.group();
+            this.enemys.enableBody = true;
+            this.enemy = spawnEnemy();
             
-                
-
-                game.time.events.loop(count, spawnEnemy, this);
-                this.enemy = spawnEnemy();
+            
+            game.time.events.loop(1000, enemy, this);
+            
         },
 
         update: function() {
             game.physics.arcade.collide(this.player, this.myWorld);
-            game.physics.arcade.collide(this.enemy, this.myWorld);
+            game.physics.arcade.collide(this.enemys, this.myWorld);
             console.log(this.count);
             //enemy animetion
             if (this.num <= 4){
@@ -93,7 +76,7 @@
             }
 
             //enemy hit tower
-            if (game.physics.arcade.collide(this.enemy, this.myTower)){
+            if (game.physics.arcade.collide(this.enemys, this.myTower)){
                 this.enemy.kill();
                 this.hp -= 1;
                 this.hpText.text = 'HP : ' + this.hp;
@@ -125,7 +108,7 @@
         //random x
         this.num = game.rnd.integerInRange(0, 10);
         this.x;
-        count = count(200);
+        //this.count = count(200);
         //console.log(this.num);
         if(this.num <= 4){
             this.x = 0;
@@ -135,10 +118,14 @@
         //console.log(this.x);
 
         //crate enemy
+        
         this.enemy = game.add.sprite(this.x,450,'enemy');
         game.physics.arcade.enable(this.enemy);
         this.enemy.body.bounce.y = 0.25;
         this.enemy.body.gravity.y=980;
+        this.enemys.add(this.enemy);
+        
+
         
         //check move
         if (this.x == 0) {
@@ -152,7 +139,7 @@
         this.enemy.animations.add('right', [3, 4, 5], 10, true);
         this.enemy.animations.add('left', [9, 10, 11], 10, true);
         this.enemy.frame = 6;    
-        return this.enemy;
+        return this.enemys;
     }
 
     function checkOverlap(spriteA, spriteB) {
@@ -166,10 +153,10 @@
     function count(num){
         var i = 0
         if(i == 0){
-           count = 2000; 
+           this.count = 2000; 
         }
-        count -= num;
-        return count;
+        this.count -= num;
+        return this.count;
     }
 
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
