@@ -3,9 +3,10 @@
     var enemy;
     var enemys;
     var count;
-    
-
-        var mainState = {
+    var boundsA;
+    var boundsB;
+    var count = 60;
+    var mainState = {
         preload: function() {
             game.load.image('ground', 'assets/ground.png');
             game.load.spritesheet('player', 'assets/warrior_m.png', 32, 36);
@@ -52,20 +53,66 @@
             //cursors
             this.cursors = this.input.keyboard.createCursorKeys(); 
             this.spacebar = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-                
+            
+
             this.enemys = game.add.group();
             this.enemys.enableBody = true;
-            this.enemy = spawnEnemy();
-            
-            
-            game.time.events.loop(1000, enemy, this);
-            
+            for(var i = 0;i<=10;i++){
+                this.num = game.rnd.integerInRange(0, 10);
+                if(this.num <=4){
+                    x = 0;
+                }else{
+                    x = 800;
+                }
+                this.enemy = game.add.sprite(x,450,'enemy');
+                game.physics.arcade.enable(this.enemy);
+                this.enemy.body.bounce.y = 0.25;
+                this.enemy.body.gravity.y=980;
+                this.enemy.body.collideWorldBounds = true;
+                if (x == 0) {
+                    this.enemy.body.velocity.x = 200;
+                }else{
+                    this.enemy.body.velocity.x = -200;
+                }
+                //animation
+                this.enemy.animations.add('right', [3, 4, 5], 10, true);
+                this.enemy.animations.add('left', [9, 10, 11], 10, true);
+                this.enemy.frame = 6;
+                this.enemys.add(this.enemy);
+            }
+
+            //game.time.events.loop(1000,spawnEnemy(), this);
+
         },
 
         update: function() {
             game.physics.arcade.collide(this.player, this.myWorld);
             game.physics.arcade.collide(this.enemys, this.myWorld);
-            console.log(this.count);
+            
+            if () {
+                this.num = game.rnd.integerInRange(0, 10);
+                if(this.num <=4){
+                    x = 0;
+                }else{
+                    x = 800;
+                }
+                this.enemy = game.add.sprite(x,450,'enemy');
+                game.physics.arcade.enable(this.enemy);
+                this.enemy.body.bounce.y = 0.25;
+                this.enemy.body.gravity.y=980;
+                this.enemy.body.collideWorldBounds = true;
+                if (x == 0) {
+                    this.enemy.body.velocity.x = 200;
+                }else{
+                    this.enemy.body.velocity.x = -200;
+                }
+                //animation
+                this.enemy.animations.add('right', [3, 4, 5], 10, true);
+                this.enemy.animations.add('left', [9, 10, 11], 10, true);
+                this.enemy.frame = 6;
+                this.enemys.add(this.enemy);
+            }
+
             //enemy animetion
             if (this.num <= 4){
                 this.enemy.animations.play('right');
@@ -83,7 +130,7 @@
             }
 
             //overlap
-            if (checkOverlap(this.player,this.enemy)&&this.spacebar.isDown){
+            if (checkOverlap(this.player, this.enemy)&&this.spacebar.isDown){
                 this.enemy.kill();
             }
 
@@ -103,63 +150,64 @@
         }
     };
 
-    //spawnEnemy
-    function spawnEnemy(){
-        //random x
-        this.num = game.rnd.integerInRange(0, 10);
-        this.x;
-        //this.count = count(200);
-        //console.log(this.num);
-        if(this.num <= 4){
-            this.x = 0;
-        }else if(this.num >= 5){
-            this.x=800;
-        } 
-        //console.log(this.x);
+        //spawnEnemy
+        function spawnEnemy(){
+            //random x
+            this.num = game.rnd.integerInRange(0, 10);
+            this.x;
+            //this.count = count(200);
+            //console.log(this.num);
+            if(this.num <= 4){
+                this.x = 0;
+            }else if(this.num >= 5){
+                this.x=800;
+            } 
+            //console.log(this.x);
 
-        //crate enemy
-        
-        this.enemy = game.add.sprite(this.x,450,'enemy');
-        game.physics.arcade.enable(this.enemy);
-        this.enemy.body.bounce.y = 0.25;
-        this.enemy.body.gravity.y=980;
-        this.enemys.add(this.enemy);
-        
+            //crate enemy
+            
+            this.enemy = game.add.sprite(this.x,450,'enemy');
+            game.physics.arcade.enable(enemy);
+            this.enemy.body.bounce.y = 0.25;
+            this.enemy.body.gravity.y=980;
+            this.enemys.add(enemy);
+            
 
-        
-        //check move
-        if (this.x == 0) {
-            this.enemy.body.velocity.x = 200;
-        }else if(this.x == 800){
-            this.enemy.body.velocity.x= -200;
+            
+            //check move
+            if (this.x == 0) {
+                this.enemy.body.velocity.x = 200;
+            }else if(this.x == 800){
+                this.enemy.body.velocity.x= -200;
+            }
+
+            //animetion and collideWorldBounds
+            this.enemy.body.collideWorldBounds = true;
+            this.enemy.animations.add('right', [3, 4, 5], 10, true);
+            this.enemy.animations.add('left', [9, 10, 11], 10, true);
+            this.enemy.frame = 6;
+            this.enemys.add(this.enemy);  
+            return this.enemy;
         }
 
-        //animetion and collideWorldBounds
-        this.enemy.body.collideWorldBounds = true;
-        this.enemy.animations.add('right', [3, 4, 5], 10, true);
-        this.enemy.animations.add('left', [9, 10, 11], 10, true);
-        this.enemy.frame = 6;    
-        return this.enemys;
-    }
+        function checkOverlap(spriteA, spriteB) {
+            boundsA = spriteA.getBounds();
+            boundsB = spriteB.getBounds();
 
-    function checkOverlap(spriteA, spriteB) {
+            return Phaser.Rectangle.intersects(boundsA, boundsB);
 
-    var boundsA = spriteA.getBounds();
-    var boundsB = spriteB.getBounds();
-
-    return Phaser.Rectangle.intersects(boundsA, boundsB);
-
-}
-    function count(num){
-        var i = 0
-        if(i == 0){
-           this.count = 2000; 
         }
-        this.count -= num;
-        return this.count;
-    }
 
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+        function count(num){
+            var i = 0
+            if(i == 0){
+               this.count = 2000; 
+            }
+            this.count -= num;
+            return this.count;
+        }
 
-    game.state.add('main', mainState);
-    game.state.start('main');
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+
+        game.state.add('main', mainState);
+        game.state.start('main');
