@@ -13,7 +13,8 @@
     var boundsA;
     var boundsB;
     var countGame;
-    var count = 60;
+    var count;
+    var l =0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
             game.load.image('ground', 'assets/ground.png');
@@ -71,9 +72,13 @@
         function update() {
             game.physics.arcade.collide(this.player, this.myWorld);
             game.physics.arcade.collide(this.enemys, this.myWorld);
+            console.log(l);
+            if(l%60==0){
+                summonEnemyRight();
+                summonEnemyLeft();  
+            }
+            l++;
             
-            //summonEnemyRight();
-            summonEnemyLeft();
 
             //enemy hit tower
             if (game.physics.arcade.collide(this.enemy, this.myTower)){
@@ -136,7 +141,7 @@
                 this.enemy.body.gravity.y=980;
                 
                 //check move
-                this.enemy.body.velocity.x= 200;
+                this.enemy.body.velocity.x= 50;
 
 
                 //animetion and collideWorldBounds
