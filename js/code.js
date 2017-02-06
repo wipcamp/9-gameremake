@@ -1,20 +1,29 @@
 
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+    var main = {preload : preload,create: create,update:update};
+    game.state.add('main', main);
+    game.state.start('main');
+    
+
     var player;
     var enemy;
-    var enemys;
+    var enemyRight = [];
+    var enemyLeft = [];
     var count;
     var boundsA;
     var boundsB;
     var countGame;
     var count = 60;
-    var mainState = {
-        preload: function() {
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        function preload() {
             game.load.image('ground', 'assets/ground.png');
             game.load.spritesheet('player', 'assets/warrior_m.png', 32, 36);
             game.load.spritesheet('enemy', 'assets/ninja_m.png', 32, 36);
-        },
-
-        create: function() {
+        }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        function create() {
+            this.enemyRight = [];
+            this.enemyLeft = [];
             //backgroupColor
             game.stage.backgroundColor = '#6666FF';
 
@@ -54,71 +63,31 @@
             //cursors
             this.cursors = this.input.keyboard.createCursorKeys(); 
             this.spacebar = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-            
+        
+        //console.log(this.enemy.getBounds());
 
-            //enemy
-            this.enemys = game.add.group();
-            this.enemys.enableBody = true;
-
-            this.num = game.rnd.integerInRange(0, 10);
-            if(this.num <=4){
-                x = 0;
-            }else{
-                x = 800;
-            }
-            this.enemy = game.add.sprite(x,500,'enemy');
-            game.physics.arcade.enable(this.enemy);
-            this.enemy.body.bounce.y = 0.25;
-            this.enemy.body.gravity.y=980;
-            this.enemy.body.collideWorldBounds = true;
-            if (x == 0) {
-                this.enemy.body.velocity.x = 200;
-            }else if (x == 800){
-                this.enemy.body.gravity.x=-200;
-            }
-            
-            //animation
-            this.enemy.animations.add('right', [3, 4, 5], 10, true);
-            this.enemy.animations.add('left', [9, 10, 11], 10, true);
-            this.enemy.frame = 6;
-            this.enemys.add(this.enemy);
-            this.countEnemy = 1;
-
-            //game.time.events.loop(1000,this.enemy, this);
-            this.countGame = 0;
-            console.log(this.countGame);
-        },
-
-        update: function() {
-            
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        function update() {
             game.physics.arcade.collide(this.player, this.myWorld);
             game.physics.arcade.collide(this.enemys, this.myWorld);
             
-
-            //enemy animetion
-            if (this.num <= 4){
-                this.enemy.animations.play('right');  
-            }else if (this.num >= 5){
-                this.enemy.animations.play('left');    
-            }
+            //summonEnemyRight();
+            summonEnemyLeft();
 
             //enemy hit tower
-            if (game.physics.arcade.collide(this.enemys, this.myTower)){
+            if (game.physics.arcade.collide(this.enemy, this.myTower)){
                 this.enemy.kill();
-                this.hp -= 10;
+                this.hp -= 1;
                 this.hpText.text = 'HP : ' + this.hp;
             }
 
             //overlap
-            if (checkOverlap(this.player, this.enemy)&&this.spacebar.isDown){
-                this.enemy.kill();
-                this.countEnemy = 0;
-            }
+            //if (checkOverlap(this.player, this.enemy)&&this.spacebar.isDown){
+            //    this.enemy.kill();
+            //    this.countEnemy--;
+            //}
 
-            if (this.countEnemy == 0) {
-                this.countGame++;
-                game.state.start('main');
-            }
 
             //checkCursor
             this.player.body.velocity.x = 0;
@@ -134,53 +103,68 @@
 
             if (this.hp == 0){
                 game.state.start('main');
-                this.countGame++;
             }
 
         }
-    };
-
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //spawnEnemy
-        function spawnEnemy(){
-            //random x
-            this.num = game.rnd.integerInRange(0, 10);
-            this.x;
-            //this.count = count(200);
-            //console.log(this.num);
-            if(this.num <= 4){
-                this.x = 0;
-            }else if(this.num >= 5){
-                this.x=800;
-            } 
-            //console.log(this.x);
-
-            //crate enemy
-            
-            this.enemy = game.add.sprite(this.x,450,'enemy');
-            game.physics.arcade.enable(enemy);
-            this.enemy.body.bounce.y = 0.25;
-            this.enemy.body.gravity.y=980;
-            this.enemys.add(enemy);
-            
-
-            
-            //check move
-            if (this.x == 0) {
-                this.enemy.body.velocity.x = 200;
-            }else if(this.x == 800){
+        function createEnemyRight(index){
+                this.countEnemy = 0;
+                //crate enemy
+                this.enemy = game.add.sprite(800,450,'enemy');
+                game.physics.arcade.enable(this.enemy);
+                this.enemy.name = index;
+                this.enemy.body.bounce.y = 0.25;
+                this.enemy.body.gravity.y=980;
+                
+                //check move
                 this.enemy.body.velocity.x= -200;
-            }
 
-            //animetion and collideWorldBounds
-            this.enemy.body.collideWorldBounds = true;
-            this.enemy.animations.add('right', [3, 4, 5], 10, true);
-            this.enemy.animations.add('left', [9, 10, 11], 10, true);
-            this.enemy.frame = 6;
-            this.enemys.add(this.enemy);  
-            return this.enemy;
+
+                //animetion and collideWorldBounds
+                this.enemy.body.collideWorldBounds = true;
+                this.enemy.animations.add('left', [9, 10, 11], 10, true);
         }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        function createEnemyLeft(index){
+                this.countEnemy = 0;
+                //crate enemy
+                this.enemy = game.add.sprite(0,450,'enemy');
+                game.physics.arcade.enable(this.enemy);
+                this.enemy.name = index;
+                this.enemy.body.bounce.y = 0.25;
+                this.enemy.body.gravity.y=980;
+                
+                //check move
+                this.enemy.body.velocity.x= 200;
 
+
+                //animetion and collideWorldBounds
+                this.enemy.body.collideWorldBounds = true;
+                this.enemy.animations.add('right', [3, 4, 5], 10, true);
+        }
+            
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        function summonEnemyRight() {
+            var l = this.enemyRight.length;
+            for(var i=0;i<l;i++)
+                this.enemyRight.pop();
+            this.countEnemy=10;
+            for (var i = 0; i < 10; i++){
+                this.enemyRight.push(new createEnemyRight(i));
+            }
+        }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////        
+         function summonEnemyLeft()  {
+            var l = this.enemyLeft.length;
+            for(var i=0;i<l;i++)
+                this.enemyLeft.pop();
+            this.countEnemy=10;
+            for (var i = 0; i < 10; i++){
+                this.enemyLeft.push(new createEnemyLeft(i));
+            }
+        }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function checkOverlap(spriteA, spriteB) {
             boundsA = spriteA.getBounds();
             boundsB = spriteB.getBounds();
@@ -188,7 +172,7 @@
             return Phaser.Rectangle.intersects(boundsA, boundsB);
 
         }
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function count(num){
             var i = 0
             if(i == 0){
@@ -197,8 +181,6 @@
             this.count -= num;
             return this.count;
         }
+        
 
-        var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
-        game.state.add('main', mainState);
-        game.state.start('main');
