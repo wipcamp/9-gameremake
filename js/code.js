@@ -7,6 +7,8 @@
 
     var player;
     var enemy;
+    var enemyLefts;
+    var enemyRights;
     var enemyRight = [];
     var enemyLeft = [];
     var count;
@@ -67,15 +69,23 @@
         
         //console.log(this.enemy.getBounds());
 
+
+
+
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
             game.physics.arcade.collide(this.player, this.myWorld);
-            game.physics.arcade.collide(this.enemys, this.myWorld);
-            console.log(l);
+            game.physics.arcade.collide(this.enemyRight, this.myWorld);
+            game.physics.arcade.collide(this.enemyLeft, this.myWorld);
             if(l%60==0){
-                summonEnemyRight();
-                summonEnemyLeft();  
+                if (l%75==0){
+                    summonEnemyRight();
+                }else if(l%90==0){
+                    summonEnemyLeft();  
+                }
+                
+                
             }
             l++;
             
@@ -93,6 +103,13 @@
             //    this.countEnemy--;
             //}
 
+            /*for(var i = 0;i<20;i++){
+                if(i >=0 && i<10){
+                    this.enemy[i].animations.play('right');
+                }else{
+                    this.enemy[i].animations.play('left');
+                }
+            }*/
 
             //checkCursor
             this.player.body.velocity.x = 0;
@@ -129,6 +146,10 @@
                 //animetion and collideWorldBounds
                 this.enemy.body.collideWorldBounds = true;
                 this.enemy.animations.add('left', [9, 10, 11], 10, true);
+
+                this.enemyRights = game.add.group();
+                this.enemyRights.enableBody = true;
+                this.enemyRights.add(this.enemy);
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function createEnemyLeft(index){
@@ -147,6 +168,10 @@
                 //animetion and collideWorldBounds
                 this.enemy.body.collideWorldBounds = true;
                 this.enemy.animations.add('right', [3, 4, 5], 10, true);
+
+                this.enemyLefts = game.add.group();
+                this.enemyLefts.enableBody = true;
+                this.enemyLefts.add(this.enemy);
         }
             
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,7 +180,7 @@
             for(var i=0;i<l;i++)
                 this.enemyRight.pop();
             this.countEnemy=10;
-            for (var i = 0; i < 10; i++){
+            for (var i = 10; i < 20; i++){
                 this.enemyRight.push(new createEnemyRight(i));
             }
         }
