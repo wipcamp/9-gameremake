@@ -56,19 +56,33 @@
               });
 
             //cursors
-            this.cursors = input.keyboard.createCursorKeys(); 
-            this.spacebar = input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+            cursors = game.input.keyboard.createCursorKeys();
+            spacebar = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
             enemyGroup = [];
             enemys = game.add.group();
             enemys.enableBody = true;
 
+            createPlayer(game);
+
 
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
-            game.physics.arcade.collide(this.player,this.myWorld);
-            player.update();
+
+            spawnEnemy();
+
+            game.physics.arcade.collide(player,myWorld);
+            player.body.velocity.x = 0;
+            if (cursors.right.isDown) {
+              player.body.velocity.x = 200;
+              player.animations.play('right');
+            } else if (cursors.left.isDown) {
+              player.body.velocity.x = -200;
+              player.animations.play('left');
+            } else {
+              player.frame = 6;
+            }
 
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
@@ -81,27 +95,12 @@
                 }
             }
 
-            newGame.update();
+            newGame();
 
             
 
         }
 ////////////////////////////Player///////////////////////////////////////
-        createPlayer.prototype.update = function(){
-
-            //checkCursor
-            player.body.velocity.x = 0;
-            if (cursors.right.isDown) {
-              player.body.velocity.x = 200;
-              player.animations.play('right');
-            } else if (cursors.left.isDown) {
-              player.body.velocity.x = -200;
-              player.animations.play('left');
-            } else {
-              player.frame = 6;
-            }
-
-        }
 
         function createPlayer(game){
             player = game.add.sprite(385,500,'player');
@@ -142,7 +141,7 @@
 
 
         function createEnemy(index,game){
-                var num = Math.Integer((Math.random() * 1) + 1);
+                var num; //= this.game.rnd.integerInRange(0, 1);
                 var x;
                 if (num == 1){
                     x = 0;
@@ -153,7 +152,7 @@
                 //crate enemy
                 this.game = game;
                 this.alive = true;
-                this.enemy = enemys.create(x, 450, 'enemy');
+                this.enemy = enemys.create(0, 450, 'enemy');
                 this.enemy.anchor.set(0.5);
                 this.enemy.scale.setTo(385, 500);
                 game.physics.arcade.enable(this.enemy);
@@ -170,7 +169,7 @@
 
 
 ////////////////////////////NewGame///////////////////////////////////////
-        newGame.prototype.update = function(){
+        newGame = function(){
             if (hp == 0){
                 game.state.start('main');
             }
