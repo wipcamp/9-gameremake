@@ -29,7 +29,7 @@
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function create() {
-
+            game.physics.startSystem(Phaser.Physics.ARCADE);
             //backgroupColor
             game.stage.backgroundColor = '#6666FF';
 
@@ -68,7 +68,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
             game.physics.arcade.collide(this.player,this.myWorld);
-            this.player.update();
+            player.update();
 
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
@@ -87,7 +87,8 @@
 
         }
 ////////////////////////////Player///////////////////////////////////////
-        enemy.prototype.update = function(){
+        createPlayer.prototype.update = function(){
+
             //checkCursor
             player.body.velocity.x = 0;
             if (cursors.right.isDown) {
@@ -117,7 +118,7 @@
 
 
 ////////////////////////////Enemy///////////////////////////////////////
-        enemy.prototype.update = function(){
+        createEnemy.prototype.update = function(){
             if(this.enemy.overlap(this.player)&&spacebar.isDown){
               console.log("overlap");
               this.enemy.kill();
