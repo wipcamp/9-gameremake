@@ -1,14 +1,23 @@
 
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
-    var main = {preload : preload,create: create,update:update};
-    game.state.add('main', main);
-    game.state.start('main');
+    var mainGame = {preload : preload,create: create, update:update};
+    var mainMenu = {preload : preload,create: mainCreate,update: mainUpdate}
+    var gameOver = {preload : preload,create: gameOverCreate, update:gameOverUpdate};   
+    var howToPlay = {preload : preload,create: howToPlayCreate, update:howToPlayUpdate}; 
+    game.state.add('mainGame', mainGame);
+    game.state.add('mainMenu', mainMenu);
+    game.state.add('gameOver', gameOver);   
+    game.state.add('howToPlay', howToPlay);  
+
+    game.state.start('mainMenu');
     
     var indexEnemy = 0;
     var player;
     var myTower;
     var myWorld;
     var hp;
+    var score = 0;
+    var scoreText;
     var hpText;
     var cursors;
     var spacebar;
@@ -26,6 +35,7 @@
             game.load.image('ground', 'assets/ground.png');
             game.load.spritesheet('player', 'assets/warrior_m.png', 32, 36);
             game.load.spritesheet('enemy', 'assets/ninja_m.png', 32, 36);
+            game.load.image('button', 'assets/button.png');
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function create() {
@@ -46,7 +56,7 @@
             var tower = myTower.create(360,game.world.height -100,'ground');
             tower.scale.setTo(0.2, 1);
             tower.body.immovable = true;
-            hp = 10;
+            hp = 1;
             hpText;
 
             //HP
@@ -64,14 +74,19 @@
             enemys.enableBody = true;
 
             createPlayer(game);
+            //spawnEnemy();
+            console.log("mainGame");
+
 
 
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
+            //spawnEnemy();
 
-            spawnEnemy();
 
+            //spawnEnemy();
+            
             game.physics.arcade.collide(player,myWorld);
             player.body.velocity.x = 0;
             if (cursors.right.isDown) {
@@ -84,6 +99,10 @@
               player.frame = 6;
             }
 
+            if (cursors.up.isDown) {
+                hp = 0;
+            }
+            /*
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
                     game.physics.arcade.collide(enemyGroup[i].enemy,this.myWorld);
@@ -91,9 +110,11 @@
             }
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
-                    enemyGroup[i].update();
+                    enemyGroup[0].update();
                 }
             }
+
+            */
 
             newGame();
 
@@ -118,7 +139,7 @@
 
 ////////////////////////////Enemy///////////////////////////////////////
         createEnemy.prototype.update = function(){
-            if(this.enemy.overlap(this.player)&&spacebar.isDown){
+            if(checkOverlap(this.enemy,this.player)&&spacebar.isDown){
               console.log("overlap");
               this.enemy.kill();
             }else if(this.enemy.overlap(myTower)){
@@ -171,9 +192,97 @@
 ////////////////////////////NewGame///////////////////////////////////////
         newGame = function(){
             if (hp == 0){
-                game.state.start('main');
+                game.state.start('gameOver');
             }
         }
 
+        function checkOverlap(spriteA, spriteB) {
 
-            
+            var boundsA = spriteA.getBounds();
+            var boundsB = spriteB.getBounds();
+
+            return Phaser.Rectangle.intersects(boundsA, boundsB);
+
+        }
+
+
+////////////////////////////MainMenu///////////////////////////////////////
+        function mainCreate(){
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+            //backgroupColor
+            game.stage.backgroundColor = '#6666FF';
+
+            var mainMenuText = game.add.text(game.world.centerX - 250, 100, 'Main Menu', {
+                fontSize: '100px',
+                fill: '#ed3465'
+              });
+
+            var button = game.add.button(game.world.centerX - 150, 400, 'button', GoToMainGame, this, 2, 1, 0);
+            button.anchor.setTo(0.5, 0.5);
+
+            var button2 = game.add.button(600, 400, 'button', GoToHowToPlay, this, 2, 1, 0);
+            button2.anchor.setTo(0.5, 0.5);
+        }
+
+        function mainUpdate(){
+
+        }
+
+        function GoToMainGame () {
+            game.state.start('mainGame');
+        }
+        function GoToMainMenu () {
+            game.state.start('mainMenu');
+        }
+        function GoToHowToPlay () {
+            game.state.start('howToPlay');
+        } 
+
+////////////////////////////GameOver///////////////////////////////////////        
+        function gameOverCreate(){
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+            //backgroupColor
+            game.stage.backgroundColor = '#6666FF';
+
+            var gameOverText = game.add.text(game.world.centerX - 120, 100, 'Game Over', {
+                fontSize: '50px',
+                fill: '#ed3465'
+              });
+
+            var scoreText = game.add.text(game.world.centerX - 50, 200, 'Score : ' + score, {
+                fontSize: '30px',
+                fill: '#ed3465'
+              });
+
+            var button = game.add.button(game.world.centerX - 150, 400, 'button', GoToMainMenu, this, 2, 1, 0);
+            button.anchor.setTo(0.5, 0.5);
+
+            var button2 = game.add.button(600, 400, 'button', GoToMainGame, this, 2, 1, 0);
+            button2.anchor.setTo(0.5, 0.5);
+        }
+
+        function gameOverUpdate(){
+
+        }
+////////////////////////////HOW TO PLAY/////////////////////////////////////// 
+        function howToPlayCreate(){
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+            //backgroupColor
+            game.stage.backgroundColor = '#6666FF';
+
+            var mainMenuText = game.add.text(game.world.centerX - 250, 100, 'HOW TO PLAY', {
+                fontSize: '80px',
+                fill: '#ed3465'
+              });
+
+            var button = game.add.button(game.world.centerX - 150, 400, 'button', GoToMainMenu, this, 2, 1, 0);
+            button.anchor.setTo(0.5, 0.5);
+
+            var button2 = game.add.button(600, 400, 'button', GoToMainGame, this, 2, 1, 0);
+            button2.anchor.setTo(0.5, 0.5);
+        }
+
+        function howToPlayUpdate(){
+
+        }
+        
