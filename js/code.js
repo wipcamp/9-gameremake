@@ -12,6 +12,8 @@
     game.state.start('mainMenu');
     
     var indexEnemy = 0;
+    var cursorL;
+    var cursorR;
     var player;
     var myTower;
     var myWorld;
@@ -32,16 +34,26 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
-            game.load.image('ground', 'assets/ground.png');
-            game.load.spritesheet('player', 'assets/warrior_m.png', 32, 36);
+            game.load.image('ground', 'assets/FloorOnly.png');
+            game.load.spritesheet('player', 'assets/WippoSpriteFinal.png', 32, 36);
             game.load.spritesheet('enemy', 'assets/ninja_m.png', 32, 36);
+            game.load.spritesheet('buttonS', 'assets/start.png', 32, 36);
+            game.load.spritesheet('buttonH', 'assets/howto.png', 32, 36);
             game.load.image('button', 'assets/button.png');
+            game.load.image('mainBg', 'assets/MainMenuBackGround.png');
+            game.load.image('gameBg', 'assets/BackgroundWithNoCloud.png');
+            game.load.image('howTo', 'assets/How-to-play-v10.png');
+            game.load.image('logo', 'assets/LogoGame.png');
+
+
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function create() {
             game.physics.startSystem(Phaser.Physics.ARCADE);
             //backgroupColor
-            game.stage.backgroundColor = '#6666FF';
+            //game.stage.backgroundColor = '#6666FF';
+            game.add.tileSprite(0, 0, 800, 600, 'gameBg');
+
 
             //ground
             myWorld = game.add.group();
@@ -56,7 +68,7 @@
             var tower = myTower.create(360,game.world.height -100,'ground');
             tower.scale.setTo(0.2, 1);
             tower.body.immovable = true;
-            hp = 1;
+            hp = 10;
             hpText;
 
             //HP
@@ -74,8 +86,12 @@
             enemys.enableBody = true;
 
             createPlayer(game);
-            //spawnEnemy();
-            console.log("mainGame");
+            for (var i = 0; i <= 10 ; i++){
+                spawnEnemy();
+                console.log(spawnEnemy());
+            }
+            
+            //console.log("mainGame");
 
 
 
@@ -83,25 +99,34 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
             //spawnEnemy();
-
+            //console.log(player);
 
             //spawnEnemy();
-            
             game.physics.arcade.collide(player,myWorld);
             player.body.velocity.x = 0;
             if (cursors.right.isDown) {
               player.body.velocity.x = 200;
               player.animations.play('right');
+              cursorR = true;
+              cursorL = false;
             } else if (cursors.left.isDown) {
               player.body.velocity.x = -200;
               player.animations.play('left');
+              cursorR = false;
+              cursorL = true;
             } else {
-              player.frame = 6;
+              if(cursorL){
+                player.animations.play('idleLeft');
+              }else{
+                player.animations.play('idleRight');
+              }
             }
 
             if (cursors.up.isDown) {
-                hp = 0;
+                hp -= 1;
+                hpText.text = 'HP : ' + hp;
             }
+
             /*
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
@@ -113,11 +138,10 @@
                     enemyGroup[0].update();
                 }
             }
-
             */
+            
 
             newGame();
-
             
 
         }
@@ -131,14 +155,16 @@
             player.body.collideWorldBounds = true;
 
             //animation
-            player.animations.add('right', [3, 4, 5], 10, true);
-            player.animations.add('left', [9, 10, 11], 10, true);
-            player.frame = 6;
+            player.animations.add('right', [4, 5, 6,7], 10, true);
+            player.animations.add('left', [8, 9, 10,11], 10, true);
+            player.animations.add('idleLeft', [0, 1], 10, true);
+            player.animations.add('idleRight', [2,3], 10, true);
+            
         }
 
 
 ////////////////////////////Enemy///////////////////////////////////////
-        createEnemy.prototype.update = function(){
+         createEnemy.prototype.update = function (i){
             if(checkOverlap(this.enemy,this.player)&&spacebar.isDown){
               console.log("overlap");
               this.enemy.kill();
@@ -161,7 +187,7 @@
         }
 
 
-        function createEnemy(index,game){
+         function createEnemy(index,game){
                 var num; //= this.game.rnd.integerInRange(0, 1);
                 var x;
                 if (num == 1){
@@ -190,7 +216,7 @@
 
 
 ////////////////////////////NewGame///////////////////////////////////////
-        newGame = function(){
+         function newGame(){
             if (hp == 0){
                 game.state.start('gameOver');
             }
@@ -210,18 +236,21 @@
         function mainCreate(){
             game.physics.startSystem(Phaser.Physics.ARCADE);
             //backgroupColor
-            game.stage.backgroundColor = '#6666FF';
+            //game.stage.backgroundColor = '#6666FF';
+            game.add.tileSprite(0, 0, 800, 600, 'mainBg');
 
-            var mainMenuText = game.add.text(game.world.centerX - 250, 100, 'Main Menu', {
-                fontSize: '100px',
-                fill: '#ed3465'
-              });
+            var logo = game.add.image(game.world.centerX - 150, 0, 'logo');
+            logo.scale.setTo(0.40, 0.40);
 
-            var button = game.add.button(game.world.centerX - 150, 400, 'button', GoToMainGame, this, 2, 1, 0);
-            button.anchor.setTo(0.5, 0.5);
+            
 
-            var button2 = game.add.button(600, 400, 'button', GoToHowToPlay, this, 2, 1, 0);
-            button2.anchor.setTo(0.5, 0.5);
+            var button = game.add.button(200, 500, 'buttonS', GoToMainGame, this, 1,2,3);
+            button.scale.setTo(0.5, 0.50);
+            console.log(button);
+
+            var button2 = game.add.button(500, 500, 'button', GoToHowToPlay, this, 2, 1, 0);
+            button2.scale.setTo(0.5, 0.5);
+            console.log(button2);
         }
 
         function mainUpdate(){
@@ -268,18 +297,19 @@
         function howToPlayCreate(){
             game.physics.startSystem(Phaser.Physics.ARCADE);
             //backgroupColor
-            game.stage.backgroundColor = '#6666FF';
+            //game.stage.backgroundColor = '#6666FF';
+            game.add.tileSprite(0, 0, 800, 600, 'howTo');
 
             var mainMenuText = game.add.text(game.world.centerX - 250, 100, 'HOW TO PLAY', {
                 fontSize: '80px',
                 fill: '#ed3465'
               });
 
-            var button = game.add.button(game.world.centerX - 150, 400, 'button', GoToMainMenu, this, 2, 1, 0);
-            button.anchor.setTo(0.5, 0.5);
+            var button = game.add.button(game.world.centerX + 100, 500, 'button', GoToMainMenu, this, 2, 1, 0);
+            button.scale.setTo(0.40, 0.40);
 
-            var button2 = game.add.button(600, 400, 'button', GoToMainGame, this, 2, 1, 0);
-            button2.anchor.setTo(0.5, 0.5);
+            var button2 = game.add.button(game.world.centerX + 250, 500, 'button', GoToMainGame, this, 2, 1, 0);
+            button2.scale.setTo(0.40, 0.40);
         }
 
         function howToPlayUpdate(){
