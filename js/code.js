@@ -20,6 +20,7 @@
     var hp;
     var score = 0;
     var scoreText;
+    var enemyGroup = [];
     var hpText;
     var cursors;
     var spacebar;
@@ -81,7 +82,7 @@
             cursors = game.input.keyboard.createCursorKeys();
             spacebar = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
-            enemyGroup = [];
+            
             enemys = game.add.group();
             enemys.enableBody = true;
 
@@ -96,7 +97,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
             spawnEnemy();
-            console.log(enemyGroup[0].name);
+            console.log(enemyGroup[i].enemy);
             //console.log(player);
 
             //spawnEnemy();
@@ -120,23 +121,25 @@
               }
             }
 
+
+            
             if (cursors.up.isDown) {
                 hp -= 1;
                 hpText.text = 'HP : ' + hp;
             }
 
-            /*
+            
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
-                    game.physics.arcade.collide(enemyGroup[i].enemy,this.myWorld);
+                    //game.physics.arcade.collide(enemyGroup[i].enemy,this.myWorld);
                 } 
             }
-            for( var i = 1; i < enemyGroup.length ; i++){
+            for( var i = 0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
                     enemyGroup[i].update(i);
                 }
             }
-            */
+            
             
 
             newGame();
@@ -181,12 +184,14 @@
 
         function spawnEnemy(){
             enemyGroup.push(new createEnemy(indexEnemy,game));
+
             indexEnemy++;
-            console.log(enemyGroup[indexEnemy]);
+            
         }
 
 
-         function createEnemy(index,game){
+
+        function createEnemy(index,game){
                 var num; //= this.game.rnd.integerInRange(0, 1);
                 var x;
                 if (num == 1){
@@ -203,13 +208,16 @@
                 game.physics.arcade.enable(this.enemy);
                 this.enemy.body.gravity.y = 980;
                 this.enemy.body.collideWorldBound = true;
-                this.enemy.name = index.toString();
+                this.enemy.name = index;
+                //console.log(this.enemy.name);
                 this.enemy.body.velocity.x = 200;
 
                 //animetion and collideWorldBounds
                 this.enemy.body.collideWorldBounds = true;
                 this.enemy.animations.add('left', [9, 10, 11], 10, true);
                 this.enemy.animations.add('right', [3, 4, 5], 10, true);
+
+                return this.enemy;
         }
 
 
