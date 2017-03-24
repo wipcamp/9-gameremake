@@ -23,7 +23,6 @@
     var hpText;
     var cursors;
     var spacebar;
-    var enemy;
     var enemys;
     var boundsA;
     var boundsB;
@@ -31,11 +30,12 @@
     var timer2;
     var x;
     var newGame;
-
+    var alive;
+    var createEnemy;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
             game.load.image('ground', 'assets/FloorOnly.png');
-            game.load.spritesheet('player', 'assets/WippoSpriteFinal.png', 32, 36);
+            game.load.spritesheet('player', 'assets/warrior_m.png', 32, 36);
             game.load.spritesheet('enemy', 'assets/ninja_m.png', 32, 36);
             game.load.spritesheet('buttonS', 'assets/start.png', 32, 36);
             game.load.spritesheet('buttonH', 'assets/howto.png', 32, 36);
@@ -86,10 +86,7 @@
             enemys.enableBody = true;
 
             createPlayer(game);
-            for (var i = 0; i <= 10 ; i++){
-                spawnEnemy();
-                console.log(spawnEnemy());
-            }
+
             
             //console.log("mainGame");
 
@@ -98,7 +95,8 @@
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
-            //spawnEnemy();
+            spawnEnemy();
+            console.log(enemyGroup[0].name);
             //console.log(player);
 
             //spawnEnemy();
@@ -131,11 +129,11 @@
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
                     game.physics.arcade.collide(enemyGroup[i].enemy,this.myWorld);
-                }
+                } 
             }
-            for( var i =0; i < enemyGroup.length ; i++){
+            for( var i = 1; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
-                    enemyGroup[0].update();
+                    enemyGroup[i].update(i);
                 }
             }
             */
@@ -165,11 +163,11 @@
 
 ////////////////////////////Enemy///////////////////////////////////////
          createEnemy.prototype.update = function (i){
-            if(checkOverlap(this.enemy,this.player)&&spacebar.isDown){
+            if(checkOverlap(this.enemyGroup[i],this.player)&&spacebar.isDown){
               console.log("overlap");
-              this.enemy.kill();
-            }else if(this.enemy.overlap(myTower)){
-                enemy.kill();
+              this.enemyGroup[i].kill();
+            }else if(this.enemyGroup[i].overlap(myTower)){
+                enemyGroup[i].kill();
                 hp -= 1;
                 hpText.text = 'HP : ' + hp;
             }
@@ -184,6 +182,7 @@
         function spawnEnemy(){
             enemyGroup.push(new createEnemy(indexEnemy,game));
             indexEnemy++;
+            console.log(enemyGroup[indexEnemy]);
         }
 
 
@@ -199,14 +198,13 @@
                 //crate enemy
                 this.game = game;
                 this.alive = true;
-                this.enemy = enemys.create(0, 450, 'enemy');
+                this.enemy = enemys.create(0, 450,'enemy');
                 this.enemy.anchor.set(0.5);
-                this.enemy.scale.setTo(385, 500);
                 game.physics.arcade.enable(this.enemy);
                 this.enemy.body.gravity.y = 980;
                 this.enemy.body.collideWorldBound = true;
-                this.enemy.name = indexEnemy.toString();
-
+                this.enemy.name = index.toString();
+                this.enemy.body.velocity.x = 200;
 
                 //animetion and collideWorldBounds
                 this.enemy.body.collideWorldBounds = true;
@@ -244,7 +242,7 @@
 
             
 
-            var button = game.add.button(200, 500, 'buttonS', GoToMainGame, this, 1,2,3);
+            var button = game.add.button(200, 500, 'button', GoToMainGame, this, 0,1,2);
             button.scale.setTo(0.5, 0.50);
             console.log(button);
 
@@ -300,10 +298,7 @@
             //game.stage.backgroundColor = '#6666FF';
             game.add.tileSprite(0, 0, 800, 600, 'howTo');
 
-            var mainMenuText = game.add.text(game.world.centerX - 250, 100, 'HOW TO PLAY', {
-                fontSize: '80px',
-                fill: '#ed3465'
-              });
+            
 
             var button = game.add.button(game.world.centerX + 100, 500, 'button', GoToMainMenu, this, 2, 1, 0);
             button.scale.setTo(0.40, 0.40);
