@@ -20,8 +20,8 @@
     var hp;
     var score = 0;
     var scoreText;
-    var enemyGroup = [];
     var hpText;
+    var enemyGroup = [];
     var cursors;
     var spacebar;
     var enemys;
@@ -80,6 +80,11 @@
                 fill: '#ed3465'
               });
 
+            scoreText = game.add.text(16, 45, 'SCORE : ' + score, {
+                fontSize: '20px',
+                fill: '#ed3465'
+              });
+
             //cursors
             cursors = game.input.keyboard.createCursorKeys();
             spacebar = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
@@ -130,19 +135,28 @@
             
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
-                    game.physics.arcade.collide(enemyGroup[i],this.myWorld);
+                    game.physics.arcade.collide(enemyGroup[i],myWorld);
                 } 
             }
             for( var i = 0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
                     //console.log(enemyGroup[i].name);
+
                     enemyGroup[i].update(i);
+                    if(checkOverlap(enemyGroup[i],player)&&spacebar.isDown){
+                      console.log("overlap");
+                        score += 10;
+                        scoreText.text = 'SCORE : ' + score;
+                        return enemyGroup[i].kill();
+                    }else if(enemyGroup[i].overlap(myTower)){
+                        return enemyGroup[i].kill();
+                        hp -= 1;
+                        hpText.text = 'HP : ' + hp;
+                    }
                     
                 }
             }
             //console.log(enemyGroup[0]);
-
-            //checkOverlap(enemyGroup[i].enemy,this.myWorld);
 
             newGame();
             
@@ -178,13 +192,13 @@
 
         function createEnemy(index,game){
                 var num = game.rnd.integerInRange(0, 1);
-                console.log(num);
+                //console.log(num);
                 if (num == 1){
                     this.x = 0;
                 }else {
                     this.x = 800
                 } 
-                console.log(this.x);
+                //console.log(this.x);
                 //crate enemy
                 this.game = game;
                 this.alive = true;
@@ -201,13 +215,11 @@
                 this.enemy.body.collideWorldBounds = true;
                 this.enemy.animations.add('left', [9, 10, 11], 10, true);
                 this.enemy.animations.add('right', [3, 4, 5], 10, true);
-                console.log(this.enemy);
+                //console.log(this.enemy);
                 return this.enemy;
         }
 
         createEnemy.prototype.update = function(i){
-            checkOverlap(this.enemyGroup[i].enemy,this.myWorld);
-            console.log(this.enemyGroup[i].name);
             if(checkOverlap(this.enemyGroup[i],this.player)&&spacebar.isDown){
               console.log("overlap");
               return this.enemyGroup[i].kill();
