@@ -35,6 +35,7 @@
     var alive;
     var createEnemy;
     var timer;
+    var attack;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
             game.load.image('ground', 'assets/FloorOnly.png');
@@ -98,9 +99,9 @@
 
             timer = game.time.create(true);
             timer.loop(1000, spawnEnemy, this);
-            //timer.start();
+            timer.start();
             //////////////////////////////////////
-            //spawnEnemy();
+            spawnEnemy();
             //console.log("mainGame");
 
 
@@ -124,19 +125,20 @@
             } else {
                 if (cursorL) {
                     player.animations.play('idleLeft');
+                    //player.animations.play('attackLeft');
                 }else {
                     player.animations.play('idleRight');
                 }
                 
             }
-            if (spacebar.isDown){
+            /*if (spacebar.isDown){
                 if(cursorL){
                     return player.animations.play('attackLeft');
                 }else{
                     return player.animations.play('attackRight');
                 }
             }
-            
+            */
 
 
             
@@ -189,13 +191,13 @@
             player.body.collideWorldBounds = true;
 
             //animation
-            player.animations.add('right', [31,32,33,34,35,36,37,38,39,40,41], 10, true);
-            player.animations.add('left', [20,21,22,23,24,25,26,27,28,29,30], 10, true);
-            player.animations.add('idleLeft', [0,1,2,3,4,5,6,7,8,9], 10, true);
-            player.animations.add('idleRight', [10,11,12,13,14,15,16,17,18,19], 10, true);
-            player.animations.add('attackLeft', [42,43,44,45,46,47,48,49,50,51,52], 11, true);
+            player.animations.add('right', [31,32,33,34,35,36,37,38,39,40,41], 20, true);
+            player.animations.add('left', [20,21,22,23,24,25,26,27,28,29,30], 20, true);
+            player.animations.add('idleLeft', [0,1,2,3,4,5,6,7,8,9], 20, true);
+            player.animations.add('idleRight', [10,11,12,13,14,15,16,17,18,19], 20, true);
+            player.animations.add('attackLeft', [42,43,44,45,46,47,48,49,50,51,52], 20, true);
             player.animations.add('attackRight', [53,54,55,56,57,58,59,60,61,62,63], 11, true);
-            
+
         }
 
 
