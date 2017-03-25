@@ -25,6 +25,7 @@
     var cursors;
     var spacebar;
     var enemys;
+    var enemy;
     var boundsA;
     var boundsB;
     var timer;
@@ -33,6 +34,7 @@
     var newGame;
     var alive;
     var createEnemy;
+    var timer;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
             game.load.image('ground', 'assets/FloorOnly.png');
@@ -88,7 +90,11 @@
 
             createPlayer(game);
 
-            
+            timer = game.time.create(true);
+            timer.loop(1000, spawnEnemy, this);
+            timer.start();
+            //////////////////////////////////////
+            spawnEnemy();
             //console.log("mainGame");
 
 
@@ -96,8 +102,7 @@
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
-            spawnEnemy();
-            console.log(enemyGroup[i].enemy);
+            
             //console.log(player);
 
             //spawnEnemy();
@@ -106,20 +111,14 @@
             if (cursors.right.isDown) {
               player.body.velocity.x = 200;
               player.animations.play('right');
-              cursorR = true;
-              cursorL = false;
+
             } else if (cursors.left.isDown) {
               player.body.velocity.x = -200;
               player.animations.play('left');
-              cursorR = false;
-              cursorL = true;
             } else {
-              if(cursorL){
-                player.animations.play('idleLeft');
-              }else{
-                player.animations.play('idleRight');
-              }
+                
             }
+            
 
 
             
@@ -131,20 +130,23 @@
             
             for( var i =0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
-                    //game.physics.arcade.collide(enemyGroup[i].enemy,this.myWorld);
+                    game.physics.arcade.collide(enemyGroup[i],this.myWorld);
                 } 
             }
             for( var i = 0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
+                    //console.log(enemyGroup[i].name);
                     enemyGroup[i].update(i);
+                    
                 }
             }
-            
-            
+            //console.log(enemyGroup[0]);
+
+            //checkOverlap(enemyGroup[i].enemy,this.myWorld);
 
             newGame();
             
-
+            
         }
 ////////////////////////////Player///////////////////////////////////////
 
@@ -165,45 +167,28 @@
 
 
 ////////////////////////////Enemy///////////////////////////////////////
-         createEnemy.prototype.update = function (i){
-            if(checkOverlap(this.enemyGroup[i],this.player)&&spacebar.isDown){
-              console.log("overlap");
-              this.enemyGroup[i].kill();
-            }else if(this.enemyGroup[i].overlap(myTower)){
-                enemyGroup[i].kill();
-                hp -= 1;
-                hpText.text = 'HP : ' + hp;
-            }
-            if (x == 1){
-                this.enemy.animations.play('right');
-            }else {
-                this.enemy.animations.play('left');
-            }
-
-        }
-
         function spawnEnemy(){
-            enemyGroup.push(new createEnemy(indexEnemy,game));
-
-            indexEnemy++;
             
+            enemyGroup.push(new createEnemy(indexEnemy,game));
+            indexEnemy++;
+            //console.log(enemyGroup[0].enemy);
         }
 
 
 
         function createEnemy(index,game){
-                var num; //= this.game.rnd.integerInRange(0, 1);
-                var x;
+                var num = game.rnd.integerInRange(0, 1);
+                console.log(num);
                 if (num == 1){
-                    x = 0;
+                    this.x = 0;
                 }else {
-                    x = 800
+                    this.x = 800
                 } 
-
+                console.log(this.x);
                 //crate enemy
                 this.game = game;
                 this.alive = true;
-                this.enemy = enemys.create(0, 450,'enemy');
+                this.enemy = enemys.create(this.x, 450,'enemy');
                 this.enemy.anchor.set(0.5);
                 game.physics.arcade.enable(this.enemy);
                 this.enemy.body.gravity.y = 980;
@@ -216,8 +201,24 @@
                 this.enemy.body.collideWorldBounds = true;
                 this.enemy.animations.add('left', [9, 10, 11], 10, true);
                 this.enemy.animations.add('right', [3, 4, 5], 10, true);
-
+                console.log(this.enemy);
                 return this.enemy;
+        }
+
+        createEnemy.prototype.update = function(i){
+            checkOverlap(this.enemyGroup[i].enemy,this.myWorld);
+            console.log(this.enemyGroup[i].name);
+            if(checkOverlap(this.enemyGroup[i],this.player)&&spacebar.isDown){
+              console.log("overlap");
+              return this.enemyGroup[i].kill();
+            }else if(this.enemyGroup[i].overlap(myTower)){
+                return enemyGroup[i].kill();
+                hp -= 1;
+                hpText.text = 'HP : ' + hp;
+            }
+            this.enemy.animations.play('right');
+            
+
         }
 
 
