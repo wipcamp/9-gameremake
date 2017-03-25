@@ -140,18 +140,21 @@
             }
             for( var i = 0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
-                    //console.log(enemyGroup[i].name);
-
-                    enemyGroup[i].update(i);
+                    if (enemyGroup[i].x == 0){
+                        return enemyGroup[i].body.velocity.x = 200;
+                    }else if (enemyGroup[i].x == 800) {
+                        return enemyGroup[i].body.velocity.x = -200;
+                    }
+                    
                     if(checkOverlap(enemyGroup[i],player)&&spacebar.isDown){
                       console.log("overlap");
                         score += 10;
                         scoreText.text = 'SCORE : ' + score;
                         return enemyGroup[i].kill();
                     }else if(enemyGroup[i].overlap(myTower)){
-                        return enemyGroup[i].kill();
                         hp -= 1;
                         hpText.text = 'HP : ' + hp;
+                        return enemyGroup[i].kill();
                     }
                     
                 }
