@@ -38,10 +38,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
             game.load.image('ground', 'assets/FloorOnly.png');
-            game.load.spritesheet('player', 'assets/warrior_m.png', 32, 36);
+            game.load.spritesheet('player', 'assets/Captain.png', 50, 75);
             game.load.spritesheet('enemy', 'assets/ninja_m.png', 32, 36);
-            game.load.spritesheet('buttonS', 'assets/start.png', 32, 36);
-            game.load.spritesheet('buttonH', 'assets/howto.png', 32, 36);
+            game.load.spritesheet('buttonS', 'assets/start.png', 150, 80);
+            game.load.spritesheet('buttonT', 'assets/Tutorial.png', 150, 80);
+            game.load.spritesheet('buttonM', 'assets/main.png', 150, 80);
             game.load.image('button', 'assets/button.png');
             game.load.image('mainBg', 'assets/MainMenuBackGround.png');
             game.load.image('gameBg', 'assets/BackgroundWithNoCloud.png');
@@ -97,9 +98,9 @@
 
             timer = game.time.create(true);
             timer.loop(1000, spawnEnemy, this);
-            timer.start();
+            //timer.start();
             //////////////////////////////////////
-            spawnEnemy();
+            //spawnEnemy();
             //console.log("mainGame");
 
 
@@ -107,21 +108,33 @@
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
-            
-            //console.log(player);
-
             //spawnEnemy();
             game.physics.arcade.collide(player,myWorld);
             player.body.velocity.x = 0;
             if (cursors.right.isDown) {
-              player.body.velocity.x = 200;
-              player.animations.play('right');
-
+                player.body.velocity.x = 200;
+                player.animations.play('right');
+                cursorR = true;
+                cursorL = false;
             } else if (cursors.left.isDown) {
-              player.body.velocity.x = -200;
-              player.animations.play('left');
+                player.body.velocity.x = -200;
+                player.animations.play('left');
+                cursorR = false;
+                cursorL = true;
             } else {
+                if (cursorL) {
+                    player.animations.play('idleLeft');
+                }else {
+                    player.animations.play('idleRight');
+                }
                 
+            }
+            if (spacebar.isDown){
+                if(cursorL){
+                    return player.animations.play('attackLeft');
+                }else{
+                    return player.animations.play('attackRight');
+                }
             }
             
 
@@ -141,8 +154,10 @@
             for( var i = 0; i < enemyGroup.length ; i++){
                 if(enemyGroup[i].alive){
                     if (enemyGroup[i].x == 0){
+                        enemyGroup[i].animations.play('right');
                         return enemyGroup[i].body.velocity.x = 200;
                     }else if (enemyGroup[i].x == 800) {
+                        enemyGroup[i].animations.play('left');
                         return enemyGroup[i].body.velocity.x = -200;
                     }
                     
@@ -159,7 +174,6 @@
                     
                 }
             }
-            //console.log(enemyGroup[0]);
 
             newGame();
             
@@ -168,17 +182,19 @@
 ////////////////////////////Player///////////////////////////////////////
 
         function createPlayer(game){
-            player = game.add.sprite(385,500,'player');
+            player = game.add.sprite(385,400,'player');
             game.physics.arcade.enable(player);
             player.body.bounce.y = 0.25;
             player.body.gravity.y=980;
             player.body.collideWorldBounds = true;
 
             //animation
-            player.animations.add('right', [4, 5, 6,7], 10, true);
-            player.animations.add('left', [8, 9, 10,11], 10, true);
-            player.animations.add('idleLeft', [0, 1], 10, true);
-            player.animations.add('idleRight', [2,3], 10, true);
+            player.animations.add('right', [31,32,33,34,35,36,37,38,39,40,41], 10, true);
+            player.animations.add('left', [20,21,22,23,24,25,26,27,28,29,30], 10, true);
+            player.animations.add('idleLeft', [0,1,2,3,4,5,6,7,8,9], 10, true);
+            player.animations.add('idleRight', [10,11,12,13,14,15,16,17,18,19], 10, true);
+            player.animations.add('attackLeft', [42,43,44,45,46,47,48,49,50,51,52], 11, true);
+            player.animations.add('attackRight', [53,54,55,56,57,58,59,60,61,62,63], 11, true);
             
         }
 
@@ -222,20 +238,6 @@
                 return this.enemy;
         }
 
-        createEnemy.prototype.update = function(i){
-            if(checkOverlap(this.enemyGroup[i],this.player)&&spacebar.isDown){
-              console.log("overlap");
-              return this.enemyGroup[i].kill();
-            }else if(this.enemyGroup[i].overlap(myTower)){
-                return enemyGroup[i].kill();
-                hp -= 1;
-                hpText.text = 'HP : ' + hp;
-            }
-            this.enemy.animations.play('right');
-            
-
-        }
-
 
 ////////////////////////////NewGame///////////////////////////////////////
          function newGame(){
@@ -266,12 +268,12 @@
 
             
 
-            var button = game.add.button(200, 500, 'button', GoToMainGame, this, 0,1,2);
-            button.scale.setTo(0.5, 0.50);
-            console.log(button);
+            var button = game.add.button(200, 500, 'buttonS', GoToMainGame, this, 1,0,2);
+            //button.scale.setTo(1, 1);
+            //console.log(button.x);
 
-            var button2 = game.add.button(500, 500, 'button', GoToHowToPlay, this, 2, 1, 0);
-            button2.scale.setTo(0.5, 0.5);
+            var button2 = game.add.button(500, 500, 'buttonT', GoToHowToPlay, this, 1, 0,2);
+            //button2.scale.setTo(0.5, 0.5);
             console.log(button2);
         }
 
@@ -304,12 +306,13 @@
                 fontSize: '30px',
                 fill: '#ed3465'
               });
+            score = 0;
 
-            var button = game.add.button(game.world.centerX - 150, 400, 'button', GoToMainMenu, this, 2, 1, 0);
-            button.anchor.setTo(0.5, 0.5);
+            var button = game.add.button(game.world.centerX - 150, 400, 'buttonM', GoToMainMenu, this, 1,0,2);
+            //button.anchor.setTo(0.5, 0.5);
 
-            var button2 = game.add.button(600, 400, 'button', GoToMainGame, this, 2, 1, 0);
-            button2.anchor.setTo(0.5, 0.5);
+            var button2 = game.add.button(450, 400, 'buttonS', GoToMainGame, this, 1,0,2);
+            //button2.anchor.setTo(0.5, 0.5);
         }
 
         function gameOverUpdate(){
@@ -324,11 +327,11 @@
 
             
 
-            var button = game.add.button(game.world.centerX + 100, 500, 'button', GoToMainMenu, this, 2, 1, 0);
-            button.scale.setTo(0.40, 0.40);
+            var button = game.add.button(game.world.centerX + 100, 500, 'buttonM', GoToMainMenu, this, 1,0,2);
+            //button.scale.setTo(0.40, 0.40);
 
-            var button2 = game.add.button(game.world.centerX + 250, 500, 'button', GoToMainGame, this, 2, 1, 0);
-            button2.scale.setTo(0.40, 0.40);
+            var button2 = game.add.button(game.world.centerX + 250, 500, 'buttonS', GoToMainGame, this, 1,0,2);
+            //button2.scale.setTo(0.40, 0.40);
         }
 
         function howToPlayUpdate(){
