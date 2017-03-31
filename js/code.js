@@ -49,7 +49,7 @@
             game.load.image('clound', 'assets/CloudOnly.png');
             game.load.spritesheet('tower', 'assets/Tower.png', 200, 400);
             game.load.spritesheet('player', 'assets/Captain.png', 50, 75);
-            game.load.spritesheet('enemy', 'assets/ninja_m.png', 32, 36);
+            game.load.spritesheet('enemy', 'assets/Bomber.png', 50, 75);
             game.load.spritesheet('buttonS', 'assets/start.png', 150, 80);
             game.load.spritesheet('buttonT', 'assets/Tutorial.png', 150, 80);
             game.load.spritesheet('buttonM', 'assets/main.png', 150, 80);
@@ -60,6 +60,8 @@
             game.load.image('howTo', 'assets/How-to-play-v10.png');
             game.load.image('logo', 'assets/LogoGame.png');
             game.load.image('bullet', 'assets/Bullet.png');
+            game.load.image('bgGameOver', 'assets/GameOver.png');
+
 
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,9 +186,9 @@
                     for (var i = 0; i < bulletGroup.length; i++) {
                         if(bulletGroup[i].alive){
                             if (cursorL) {
-                                bulletGroup[i].body.velocity.x = -200;
+                                bulletGroup[i].body.velocity.x = -2000;
                             }else{
-                                bulletGroup[i].body.velocity.x = 200;
+                                bulletGroup[i].body.velocity.x = 2000;
                             } 
                             if(checkOverlap(enemyGroup[i],bulletGroup[i])){
                                 enemyGroup[i].kill();
@@ -212,12 +214,12 @@
             
 
 
-            /*
+            
             if (cursors.up.isDown) {
                 hp -= 1;
                 hpText.text = 'HP : ' + hp;
             }
-            */
+            
 
             
             for( var i =0; i < enemyGroup.length ; i++){
@@ -229,19 +231,21 @@
                 if(enemyGroup[i].alive){
                     if (enemyGroup[i].x == 0){
                         enemyGroup[i].animations.play('right');
-                        enemyGroup[i].body.velocity.x = 200;
+                        enemyGroup[i].body.velocity.x = 180;
                     }else if (enemyGroup[i].x == 800) {
                         enemyGroup[i].animations.play('left');
-                        enemyGroup[i].body.velocity.x = -200;
+                        enemyGroup[i].body.velocity.x = -180;
                     }
                     
                     if(checkOverlap(enemyGroup[i],player)&&buttonZ.isDown){
                         console.log("punch overlap");
+                        enemyGroup[i].kill();
                         score += 10;
                         scoreText.text = 'SCORE : ' + score;
-                        enemyGroup[i].kill();
+                        
                     }
-                    if(enemyGroup[i].overlap(this.tower)){
+                    else if(enemyGroup[i].overlap(this.tower)){
+                        enemyGroup[i].kill();
                         hp -= 1;
                         hpText.text = 'HP : ' + hp;
                         /*if (hp === 16){
@@ -255,7 +259,7 @@
                         }else if (hp === 0){
                             this.hpbar.animations.play('1');
                         }*/
-                        enemyGroup[i].kill();
+                        
                     }
                 }
                             }
@@ -319,19 +323,19 @@
                 //crate enemy
                 this.game = game;
                 this.alive = true;
-                this.enemy = enemys.create(this.x, 515,'enemy');
+                this.enemy = enemys.create(this.x, 500,'enemy');
                 this.enemy.anchor.set(0.5);
                 game.physics.arcade.enable(this.enemy);
                 this.enemy.body.gravity.y = 980;
                 this.enemy.body.collideWorldBound = true;
                 this.enemy.name = index;
                 //console.log(this.enemy.name);
-                this.enemy.body.velocity.x = 200;
+                this.enemy.body.velocity.x = 150;
 
                 //animetion and collideWorldBounds
                 this.enemy.body.collideWorldBounds = true;
-                this.enemy.animations.add('left', [9, 10, 11], 10, true);
-                this.enemy.animations.add('right', [3, 4, 5], 10, true);
+                this.enemy.animations.add('left', [0,1,2,3,4,5,6,7,8,9,10,11], 10, true);
+                this.enemy.animations.add('right', [12,13,14,15,16,17,18,19,20,21,22,23], 10, true);
                 //console.log(this.enemy);
                 return this.enemy;
         }
@@ -392,24 +396,24 @@
 ////////////////////////////GameOver///////////////////////////////////////        
         function gameOverCreate(){
             game.physics.startSystem(Phaser.Physics.ARCADE);
-            //backgroupColor
-            game.stage.backgroundColor = '#6666FF';
+            //backgroup
+            game.add.tileSprite(0, 0, 800, 600, 'bgGameOver');
 
             var gameOverText = game.add.text(game.world.centerX - 120, 100, 'Game Over', {
                 fontSize: '50px',
                 fill: '#ed3465'
               });
 
-            var scoreText = game.add.text(game.world.centerX - 50, 200, 'Score : ' + score, {
+            var scoreText = game.add.text(game.world.centerX - 50, 150, 'Score : ' + score, {
                 fontSize: '30px',
                 fill: '#ed3465'
               });
             score = 0;
 
-            var button = game.add.button(game.world.centerX - 150, 400, 'buttonM', GoToMainMenu, this, 1,0,2);
+            var button = game.add.button(150, 500, 'buttonM', GoToMainMenu, this, 1,0,2);
             //button.anchor.setTo(0.5, 0.5);
 
-            var button2 = game.add.button(450, 400, 'buttonS', GoToMainGame, this, 1,0,2);
+            var button2 = game.add.button(500, 500, 'buttonS', GoToMainGame, this, 1,0,2);
             //button2.anchor.setTo(0.5, 0.5);
         }
 
