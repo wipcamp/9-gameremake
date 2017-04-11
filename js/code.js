@@ -43,6 +43,8 @@
     var bulletGroup = [];
     var bulletX;
     var shootTime = 200;
+    var walkSound;
+    var music;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
             game.load.image('ground', 'assets/FloorOnly.png');
@@ -61,6 +63,11 @@
             game.load.image('logo', 'assets/LogoGame.png');
             game.load.image('bullet', 'assets/Bullet.png');
             game.load.image('bgGameOver', 'assets/GameOver.png');
+            game.load.audio('gameOverSound','assets/sound/gameOver.mp3');
+            game.load.audio('gameSound','assets/sound/mainGame.mp3');
+            game.load.audio('mainSound','assets/sound/mainMenu.mp3');
+            game.load.audio('walkSound','assets/sound/walk.mp3');
+            //game.load.audio('Play','assets/sound/Escape.mp3');
 
 
         }
@@ -71,6 +78,10 @@
             //backgroupColor
             //game.stage.backgroundColor = '#6666FF';
             game.add.tileSprite(0, 0, 800, 600, 'gameBg');
+
+            music = game.add.audio('gameSound');
+            music.loopFull();
+            walkSound = game.add.audio('walkSound');
 
 
             //ground
@@ -161,9 +172,11 @@
                 cursorL = true;
             } else {
                 if (cursorL) {
+                    walkSound.play();
                     player.animations.play('idleLeft');
                     //player.animations.play('attackLeft');
                 }else {
+                    walkSound.play();
                     player.animations.play('idleRight');
                 }
                 
@@ -190,13 +203,15 @@
                             }else{
                                 bulletGroup[i].body.velocity.x = 2000;
                             } 
-                            if(checkOverlap(enemyGroup[i],bulletGroup[i])){
+                            if (enemyGroup[i].alive) {
+                                if(checkOverlap(enemyGroup[i],bulletGroup[i])){
                                 enemyGroup[i].kill();
                                 bulletGroup[i].kill();
                                 console.log("shoot overlap");
                                 score += 10;
                                 scoreText.text = 'SCORE : ' + score;
                                 
+                                }
                             }
                             if (game.physics.arcade.collide(bulletGroup[i],myWorld)) {
                                 bulletGroup[i].kill();
@@ -368,6 +383,9 @@
             var logo = game.add.image(game.world.centerX - 150, 0, 'logo');
             logo.scale.setTo(0.40, 0.40);
 
+            music = game.add.audio('mainSound');
+            music.loopFull();
+
             
 
             var button = game.add.button(200, 500, 'buttonS', GoToMainGame, this, 1,0,2);
@@ -384,12 +402,15 @@
         }
 
         function GoToMainGame () {
+            music.stop();
             game.state.start('mainGame');
         }
         function GoToMainMenu () {
+            music.stop();
             game.state.start('mainMenu');
         }
         function GoToHowToPlay () {
+            music.stop();
             game.state.start('howToPlay');
         } 
 
@@ -398,6 +419,9 @@
             game.physics.startSystem(Phaser.Physics.ARCADE);
             //backgroup
             game.add.tileSprite(0, 0, 800, 600, 'bgGameOver');
+
+            music = game.add.audio('gameOverSound');
+            music.loopFull();
 
             var gameOverText = game.add.text(game.world.centerX - 120, 100, 'Game Over', {
                 fontSize: '50px',
@@ -426,6 +450,9 @@
             //backgroupColor
             //game.stage.backgroundColor = '#6666FF';
             game.add.tileSprite(0, 0, 800, 600, 'howTo');
+
+            music = game.add.audio('mainSound');
+            music.loopFull();
 
             
 
