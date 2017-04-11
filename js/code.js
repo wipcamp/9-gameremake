@@ -44,6 +44,10 @@
     var bulletX;
     var shootTime = 200;
     var walkSound;
+    var attackedSound;
+    var attackMissSound;
+    var shootSound;
+    var explodeSound;
     var music;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
@@ -67,9 +71,10 @@
             game.load.audio('gameSound','assets/sound/mainGame.mp3');
             game.load.audio('mainSound','assets/sound/mainMenu.mp3');
             game.load.audio('walkSound','assets/sound/walk.mp3');
-            //game.load.audio('Play','assets/sound/Escape.mp3');
-
-
+            game.load.audio('attackedSound','assets/sound/attacked.mp3');
+            game.load.audio('attackMissSound','assets/sound/attackMiss.mp3');
+            game.load.audio('shootSound','assets/sound/shot.mp3');
+            game.load.audio('explodeSound','assets/sound/explode.mp3');
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function create() {
@@ -79,10 +84,13 @@
             //game.stage.backgroundColor = '#6666FF';
             game.add.tileSprite(0, 0, 800, 600, 'gameBg');
 
-            music = game.add.audio('gameSound');
+            music = game.add.audio('gameSound',0.4);
             music.loopFull();
-            walkSound = game.add.audio('walkSound');
-
+            walkSound = game.add.audio('walkSound',0.3);
+            attackedSound = game.add.audio('attackedSound',0.3);
+            attackMissSound = game.add.audio('attackMissSound',0.3);
+            shootSound = game.add.audio('shootSound',0.3);
+            explodeSound = game.add.audio('explodeSound',0.1);
 
             //ground
             myWorld = game.add.group();
@@ -161,10 +169,10 @@
             game.physics.arcade.collide(player,myWorld);
             player.body.velocity.x = 0;
             if (cursors.right.isDown) {
-                player.body.velocity.x = 200;
+                   player.body.velocity.x = 200;
                 player.animations.play('right');
                 cursorR = true;
-                cursorL = false;
+                cursorL = false;     
             } else if (cursors.left.isDown) {
                 player.body.velocity.x = -200;
                 player.animations.play('left');
@@ -173,10 +181,12 @@
             } else {
                 if (cursorL) {
                     walkSound.play();
+                    walkSound.loopFull();
                     player.animations.play('idleLeft');
                     //player.animations.play('attackLeft');
                 }else {
                     walkSound.play();
+                    walkSound.loopFull();
                     player.animations.play('idleRight');
                 }
                 
@@ -194,6 +204,8 @@
 
             if (shootTime === 200) {
                 if (buttonX.isDown) {
+                    if(buttonX.duration === 0){
+                    shootSound.play();
                     console.log('player X : '+player.x);
                     spawnBullet(player.x);
                     for (var i = 0; i < bulletGroup.length; i++) {
@@ -220,6 +232,8 @@
                         }
                     }
                     shootTime = 0; 
+                    }
+
                 }
             }
 
@@ -251,15 +265,23 @@
                         enemyGroup[i].animations.play('left');
                         enemyGroup[i].body.velocity.x = -180;
                     }
-                    
-                    if(checkOverlap(enemyGroup[i],player)&&buttonZ.isDown){
+                    if (buttonZ.duration === 0) {
+                        if(buttonZ.isDown && !checkOverlap(enemyGroup[i],player)){
+                            if (buttonZ.duration === 0) {
+                                attackMissSound.play();
+                            }
+                            
+                        }
+                        if(checkOverlap(enemyGroup[i],player)&&buttonZ.isDown){
                         console.log("punch overlap");
+                        attackedSound.play();
                         enemyGroup[i].kill();
                         score += 10;
                         scoreText.text = 'SCORE : ' + score;
-                        
-                    }
-                    else if(enemyGroup[i].overlap(this.tower)){
+                        }
+                    } 
+                    if(enemyGroup[i].overlap(this.tower)){
+                        explodeSound.play();
                         enemyGroup[i].kill();
                         hp -= 1;
                         hpText.text = 'HP : ' + hp;
@@ -275,9 +297,9 @@
                             this.hpbar.animations.play('1');
                         }*/
                         
-                    }
+                        }
                 }
-                            }
+            }
 
             newGame();
             
@@ -359,6 +381,7 @@
 ////////////////////////////NewGame///////////////////////////////////////
          function newGame(){
             if (hp == 0){
+                walkSound.stop();
                 game.state.start('gameOver');
             }
         }
@@ -383,7 +406,7 @@
             var logo = game.add.image(game.world.centerX - 150, 0, 'logo');
             logo.scale.setTo(0.40, 0.40);
 
-            music = game.add.audio('mainSound');
+            music = game.add.audio('mainSound',0.3);
             music.loopFull();
 
             
@@ -420,7 +443,8 @@
             //backgroup
             game.add.tileSprite(0, 0, 800, 600, 'bgGameOver');
 
-            music = game.add.audio('gameOverSound');
+            music.stop();
+            music = game.add.audio('gameOverSound',0.3);
             music.loopFull();
 
             var gameOverText = game.add.text(game.world.centerX - 120, 100, 'Game Over', {
@@ -451,7 +475,7 @@
             //game.stage.backgroundColor = '#6666FF';
             game.add.tileSprite(0, 0, 800, 600, 'howTo');
 
-            music = game.add.audio('mainSound');
+            music = game.add.audio('mainSound',0.3);
             music.loopFull();
 
             
