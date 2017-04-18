@@ -73,7 +73,7 @@
             game.load.audio('walkSound','assets/sound/walk.mp3');
             game.load.audio('attackedSound','assets/sound/attacked.mp3');
             game.load.audio('attackMissSound','assets/sound/attackMiss.mp3');
-            game.load.audio('shootSound','assets/sound/shot.mp3');
+            game.load.audio('shootSound','assets/sound/shot.aiff');
             game.load.audio('explodeSound','assets/sound/explode.mp3');
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,7 +154,6 @@
             spawnEnemy();
             //console.log("mainGame");
 
-            createBullet(game,500);
 
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,32 +201,39 @@
                 }
             }
 
+
+            
+            
             if (shootTime === 200) {
                 if (buttonX.isDown) {
+                    spawnBullet(player.x);
                     if(buttonX.duration === 0){
                     shootSound.play();
-                    console.log('player X : '+player.x);
-                    spawnBullet(player.x);
                     for (var i = 0; i < bulletGroup.length; i++) {
                         if(bulletGroup[i].alive){
                             if (cursorL) {
-                                bulletGroup[i].body.velocity.x = -2000;
-                            }else{
-                                bulletGroup[i].body.velocity.x = 2000;
+                                bulletGroup[i].body.velocity.x = -500;
+                                console.log('shoot L');
+                            }else if(cursorR){
+                                bulletGroup[i].body.velocity.x = 500;
+                                console.log('shoot R');
                             } 
-                            if (enemyGroup[i].alive) {
-                                if(checkOverlap(enemyGroup[i],bulletGroup[i])){
-                                enemyGroup[i].kill();
-                                bulletGroup[i].kill();
-                                console.log("shoot overlap");
-                                score += 10;
-                                scoreText.text = 'SCORE : ' + score;
-                                
-                                }
+                            for (var j = 0;j<enemyGroup.length;j++){
+                                if (enemyGroup[j].alive) {
+                                    if(checkOverlap(enemyGroup[j],bulletGroup[i])){
+                                    bulletGroup[i].kill();
+                                    enemyGroup[j].kill();
+                                    console.log("shoot overlap");
+                                    score += 10;
+                                    scoreText.text = 'SCORE : ' + score;
+                                    
+                                    }
+                                } 
                             }
                             if (game.physics.arcade.collide(bulletGroup[i],myWorld)) {
-                                bulletGroup[i].kill();
-                            }
+                                    bulletGroup[i].kill();
+                                }
+                            
 
                         }
                     }
@@ -326,15 +332,25 @@
         }
 
         function spawnBullet(positionX){
+            console.log(positionX);
             bulletGroup.push(new createBullet(game,positionX));
-            console.log('Bullet X : '+bulletGroup[0].x);
+            
         }
 
+        //function createBullet(game,positionX){
+
+        //}
+
         function createBullet(game,bulletX){
-            this.bullet = bullets.create(bulletX, 500, 'bullet');
-            this.bullet.scale.setTo(100, 100);
-            this.bullet.body.immovable = true;
-            return this.bullet;
+                console.log('Done');
+                this.game = game;
+                this.bullet = bullets.create(bulletX, 500, 'bullet');
+                game.physics.arcade.enable(player);
+                this.bullet.scale.setTo(100, 100);
+                this.bullet.body.immovable = true;
+                this.bullet.body.collideWorldBounds = true;
+                this.alive = true;
+                return this.bullet;   
         }
 
 
@@ -409,6 +425,10 @@
             music = game.add.audio('mainSound',0.3);
             music.loopFull();
 
+            var bullet = game.add.image(350,500,'bullet');
+            console.log(bullet);
+            bullet.scale.setTo(1, 1);
+            bullet.anchor.set(20);
             
 
             var button = game.add.button(200, 500, 'buttonS', GoToMainGame, this, 1,0,2);
@@ -417,7 +437,6 @@
 
             var button2 = game.add.button(500, 500, 'buttonT', GoToHowToPlay, this, 1, 0,2);
             //button2.scale.setTo(0.5, 0.5);
-            console.log(button2);
         }
 
         function mainUpdate(){
