@@ -49,6 +49,7 @@
     var shootSound;
     var explodeSound;
     var music;
+    var cOverlap = true;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
             game.load.image('ground', 'assets/FloorOnly.png');
@@ -221,15 +222,21 @@
                             for (var j = 0;j<enemyGroup.length;j++){
                                 if (enemyGroup[j].alive) {
                                     if(checkOverlap(enemyGroup[j],bulletGroup[i])){
-                                    bulletGroup[i].kill();
-                                    enemyGroup[j].kill();
-                                    console.log("shoot overlap");
-                                    score += 10;
-                                    scoreText.text = 'SCORE : ' + score;
+                                        if (cOverlap) {
+                                            bulletGroup[i].kill();
+                                            enemyGroup[j].kill();
+                                            console.log("shoot overlap");
+                                            score += 10;
+                                            scoreText.text = 'SCORE : ' + score;
+                                            cOverlap = !cOverlap;
+                                            console.log(cOverlap);
+                                        }
+                                    
                                     
                                     }
                                 } 
                             }
+                            cOverlap = !cOverlap;
                             if (game.physics.arcade.collide(bulletGroup[i],myWorld)) {
                                     bulletGroup[i].kill();
                                 }
