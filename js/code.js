@@ -42,7 +42,7 @@
     var buttonX;
     var bulletGroup = [];
     var bulletX;
-    var shootTime = 200;
+    var shootTime = 2;
     var walkSound;
     var attackedSound;
     var attackMissSound;
@@ -160,7 +160,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
             //spawnEnemy();
-            if (shootTime < 200) {
+            if (shootTime < 2) {
                 shootTime++;
             }
             
@@ -205,51 +205,52 @@
 
             
             
-            if (shootTime === 200) {
+            if (shootTime === 2) {
                 if (buttonX.isDown) {
                     spawnBullet(player.x);
                     if(buttonX.duration === 0){
                     shootSound.play();
-                    for (var i = 0; i < bulletGroup.length; i++) {
-                        if(bulletGroup[i].alive){
-                            if (cursorL) {
-                                bulletGroup[i].body.velocity.x = -500;
-                                console.log('shoot L');
-                            }else if(cursorR){
-                                bulletGroup[i].body.velocity.x = 500;
-                                console.log('shoot R');
-                            } 
-                            for (var j = 0;j<enemyGroup.length;j++){
-                                if (enemyGroup[j].alive) {
-                                    if(checkOverlap(enemyGroup[j],bulletGroup[i])){
-                                        if (cOverlap) {
-                                            bulletGroup[i].kill();
-                                            enemyGroup[j].kill();
-                                            console.log("shoot overlap");
-                                            score += 10;
-                                            scoreText.text = 'SCORE : ' + score;
-                                            cOverlap = !cOverlap;
-                                            console.log(cOverlap);
-                                        }
-                                    
-                                    
-                                    }
-                                } 
-                            }
-                            cOverlap = !cOverlap;
-                            if (game.physics.arcade.collide(bulletGroup[i],myWorld)) {
-                                    bulletGroup[i].kill();
-                                }
-                            
-
-                        }
-                    }
                     shootTime = 0; 
                     }
 
                 }
             }
-
+            for (var i = 0; i < bulletGroup.length; i++) {
+                if(bulletGroup[i].alive){
+                    //console.log('bullet x : ' +bulletGroup[i].x);
+                    if (cursorL) {
+                        bulletGroup[i].body.velocity.x = -500;
+                        console.log('shoot L');
+                    }else if (cursorR) {
+                        bulletGroup[i].body.velocity.x = 500;
+                        console.log('shoot R');
+                    } 
+                    for (var j = 0;j<enemyGroup.length;j++){
+                        if (enemyGroup[j].alive) {
+                            if(checkOverlap(enemyGroup[j],bulletGroup[i])){
+                                if (cOverlap) {
+                                    console.log('overlap enemy positionX : '+enemyGroup[j].x);
+                                    bulletGroup[i].kill();
+                                    enemyGroup[j].kill();
+                                    console.log("shoot overlap");
+                                    score += 10;
+                                    scoreText.text = 'SCORE : ' + score;
+                                    cOverlap = !cOverlap;
+                                    console.log(cOverlap);
+                                }                            
+                           }
+                        } 
+                    }
+                            
+                    if (game.physics.arcade.collide(bulletGroup[i],myWorld)) {
+                                    bulletGroup[i].kill();                                
+                    }
+                }
+            }
+            if(cOverlap === false){
+                cOverlap = !cOverlap;
+            }
+            
             
 
             
@@ -350,14 +351,15 @@
 
         function createBullet(game,bulletX){
                 console.log('Done');
-                this.game = game;
-                this.bullet = bullets.create(bulletX, 500, 'bullet');
-                game.physics.arcade.enable(player);
-                this.bullet.scale.setTo(100, 100);
-                this.bullet.body.immovable = true;
-                this.bullet.body.collideWorldBounds = true;
-                this.alive = true;
-                return this.bullet;   
+                game = game;
+                bullet = bullets.create(385, 500, 'bullet');
+                game.physics.arcade.enable(bullet);
+                bullet.scale.setTo(100, 100);
+                bullet.body.velocity.x = -500;
+                bullet.body.immovable = true;
+                bullet.body.collideWorldBounds = true;
+                alive = true;
+                return bullet;   
         }
 
 
