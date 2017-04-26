@@ -42,7 +42,7 @@
     var buttonX;
     var bulletGroup = [];
     var bulletX;
-    var shootTime = 2;
+    var shootTime = 200;
     var walkSound;
     var attackedSound;
     var attackMissSound;
@@ -133,6 +133,11 @@
                 fill: '#ed3465'
               });
 
+            bulletCountText = game.add.text(680, 16, 'Count : ' + parseInt(shootTime/2), {
+                fontSize: '20px',
+                fill: '#ed3465'
+              });
+
             //cursors
             cursors = game.input.keyboard.createCursorKeys();
             spacebar = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
@@ -160,8 +165,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function update() {
             //spawnEnemy();
-            if (shootTime < 2) {
+            if (shootTime < 200) {
                 shootTime++;
+                bulletCountText.text = 'Count : ' + parseInt(shootTime/2);
             }
             
             this.tower.animations.play('idle');
@@ -205,7 +211,7 @@
 
             
             
-            if (shootTime === 2) {
+            if (shootTime === 200) {
                 if (buttonX.isDown) {
                     spawnBullet(player.x);
                     if(buttonX.duration === 0){
@@ -217,12 +223,12 @@
             }
             for (var i = 0; i < bulletGroup.length; i++) {
                 if(bulletGroup[i].alive){
-                    //console.log('bullet x : ' +bulletGroup[i].x);
+                    console.log('bullet x : ' +bulletGroup[i].x);
                     if (cursorL) {
-                        bulletGroup[i].body.velocity.x = -500;
+                        bulletGroup[i].body.velocity.x = -1000;
                         console.log('shoot L');
                     }else if (cursorR) {
-                        bulletGroup[i].body.velocity.x = 500;
+                        bulletGroup[i].body.velocity.x = 1000;
                         console.log('shoot R');
                     } 
                     for (var j = 0;j<enemyGroup.length;j++){
@@ -236,7 +242,7 @@
                                     score += 10;
                                     scoreText.text = 'SCORE : ' + score;
                                     cOverlap = !cOverlap;
-                                    console.log(cOverlap);
+                                    //console.log(cOverlap);
                                 }                            
                            }
                         } 
@@ -340,7 +346,7 @@
         }
 
         function spawnBullet(positionX){
-            console.log(positionX);
+            //console.log(positionX);
             bulletGroup.push(new createBullet(game,positionX));
             
         }
@@ -350,14 +356,12 @@
         //}
 
         function createBullet(game,bulletX){
-                console.log('Done');
-                game = game;
-                bullet = bullets.create(385, 500, 'bullet');
-                game.physics.arcade.enable(bullet);
+                //console.log('Done');
+                //game = game;
+                bullet = bullets.create(bulletX, 500, 'bullet');
+                //game.physics.arcade.enable(bullet);
                 bullet.scale.setTo(100, 100);
-                bullet.body.velocity.x = -500;
-                bullet.body.immovable = true;
-                bullet.body.collideWorldBounds = true;
+                //bullet.body.collideWorldBounds = true;
                 alive = true;
                 return bullet;   
         }
