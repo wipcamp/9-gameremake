@@ -175,16 +175,38 @@
             game.physics.arcade.collide(player,myWorld);
             player.body.velocity.x = 0;
             if (cursors.right.isDown) {
-                   player.body.velocity.x = 200;
-                player.animations.play('right');
+                player.body.velocity.x = 200;
+                if(!buttonZ.isDown){
+                    player.animations.play('right');
+                }else{
+                    player.animations.stop('right');        
+                }
+                
                 cursorR = true;
                 cursorL = false;     
             } else if (cursors.left.isDown) {
                 player.body.velocity.x = -200;
-                player.animations.play('left');
+                if(!buttonZ.isDown){
+                   player.animations.play('left'); 
+                }else {
+                    player.animations.stop('left');
+                }
+                
                 cursorR = false;
                 cursorL = true;
-            } else {
+            }else if (buttonZ.isDown){
+                if (buttonZ.duration === 0){
+                    if(cursorL){
+                        player.animations.stop('idleLeft');
+                        player.animations.play('attackLeft');
+                    
+                    }else{
+
+                        player.animations.stop('idleRight');
+                        player.animations.play('attackRight');
+                    }
+                }
+            }else {
                 if (cursorL) {
                     walkSound.play();
                     walkSound.loopFull();
@@ -197,14 +219,18 @@
                 }
                 
             }
-
+            
             if (buttonZ.isDown){
-                if(cursorL){
-                    player.animations.stop('left');
-                    player.animations.play('attackLeft');
-                }else{
-                    player.animations.stop('right');
-                    player.animations.play('attackRight');
+                if (buttonZ.duration === 0){
+                    if(cursorL){
+                        player.animations.stop('idleLeft');
+                        player.animations.play('attackLeft');
+                    
+                    }else{
+
+                        player.animations.stop('idleRight');
+                        player.animations.play('attackRight');
+                    }
                 }
             }
 
@@ -340,8 +366,8 @@
             player.animations.add('left', [20,21,22,23,24,25,26,27,28,29,30], 20, true);
             player.animations.add('idleLeft', [0,1,2,3,4,5,6,7,8,9], 20, true);
             player.animations.add('idleRight', [10,11,12,13,14,15,16,17,18,19], 20, true);
-            player.animations.add('attackLeft', [42,43,44,45,46,47,48,49,50,51,52], 20, true);
-            player.animations.add('attackRight', [53,54,55,56,57,58,59,60,61,62,63], 11, true);
+            player.animations.add('attackLeft', [42,43,44,45,46,47,48,49,50,51,52], 200, true);
+            player.animations.add('attackRight', [53,54,55,56,57,58,59,60,61,62,63], 200, true);
 
         }
 
