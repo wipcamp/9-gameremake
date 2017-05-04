@@ -50,6 +50,8 @@
     var explodeSound;
     var music;
     var cOverlap = true;
+    var pushX = false;
+    var bulletSize = 0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function preload() {
             game.load.image('ground', 'assets/FloorOnly.png');
@@ -234,21 +236,39 @@
                 }
             }
 
-
+            if (bulletGroup[0].alive){
+                console.log("bullet x: "+bulletGroup[0].x);
+            }
             
+            if (bulletSize < 10) {
+                spawnBullet(player.x);
+            }
             
+            console.log("Bullet Capacity"+bulletGroup.length);
             if (shootTime === 200) {
                 if (buttonX.isDown) {
-                    spawnBullet(player.x);
                     if(buttonX.duration === 0){
-                    shootSound.play();
-                    shootTime = 0; 
+                        console.log("Push X before change: "+pushX);
+                        if (!pushX) {
+                            pushX = true;
+                        }
+                        console.log("Push X after change: "+pushX);
+                        
+                        for(var i = 0; i < bulletGroup.length; i++){
+                            //bulletGroup[i].x = this.player.x;
+                            //bulletGroup[i].enableBody = true;
+                        }
+
+                        shootSound.play();
+                        shootTime = 0; 
                     }
 
                 }
             }
             for (var i = 0; i < bulletGroup.length; i++) {
-                if(bulletGroup[i].alive){
+                if (pushX) {
+                    if(bulletGroup[i].alive){
+                    
                     console.log('bullet x : ' +bulletGroup[i].x);
                     if (cursorL) {
                         bulletGroup[i].body.velocity.x = -1000;
@@ -278,7 +298,10 @@
                                     bulletGroup[i].kill();                                
                     }
                 }
+                    console.log(pushX);
+                }  
             }
+            pushX = false;
             if(cOverlap === false){
                 cOverlap = !cOverlap;
             }
@@ -368,6 +391,8 @@
             player.animations.add('idleRight', [10,11,12,13,14,15,16,17,18,19], 20, true);
             player.animations.add('attackLeft', [42,43,44,45,46,47,48,49,50,51,52], 200, true);
             player.animations.add('attackRight', [53,54,55,56,57,58,59,60,61,62,63], 200, true);
+            this.spawnBullet(385);
+            
 
         }
 
@@ -382,14 +407,16 @@
         //}
 
         function createBullet(game,bulletX){
-                //console.log('Done');
-                //game = game;
+                console.log('Done');
+                game = game;
                 bullet = bullets.create(bulletX, 500, 'bullet');
-                //game.physics.arcade.enable(bullet);
+                game.physics.arcade.enable(bullet);
+                bullet.enableBody = false;
                 bullet.scale.setTo(100, 100);
-                //bullet.body.collideWorldBounds = true;
+                bullet.body.collideWorldBounds = true;
                 alive = true;
-                return bullet;   
+                bulletSize += 1;
+                return bullet;            
         }
 
 
