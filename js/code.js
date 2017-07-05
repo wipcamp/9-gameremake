@@ -106,7 +106,12 @@
             this.tower = game.add.sprite(300,230,'tower');
             this.tower.scale.setTo(1, 1);
             game.physics.arcade.enable(this.tower);
-            this.tower.animations.add('idle',[0],10,true);
+            this.tower.frame = 0;
+            this.tower.animations.add('1',[1,2,3,4,5,6,7,8,9,10,11],1,true);
+            this.tower.animations.add('2',[8,9,10,11,12,13,14],10,true);
+            this.tower.animations.add('3',[15,16,17,18,19,20,21],10,true);
+            this.tower.animations.add('4',[22,23,24,25,26,27,28],10,true);
+            this.tower.animations.add('5',[29,30,31,32,33,34,34],10,true);
             this.tower.body.collideWorldBounds = false;
             //console.log(tower);
 
@@ -114,7 +119,7 @@
             hpText;
 
             //HP
-            /*
+            
             this.hpbar = game.add.sprite(16,16,'hpbar');
             this.hpbar.scale.setTo(1, 1);
             game.physics.arcade.enable(this.hpbar);
@@ -124,13 +129,14 @@
             this.hpbar.animations.add('3',[18,19,20,21,22,23,24,25,26],10,true);
             this.hpbar.animations.add('2',[27,28,29,30,31,32,33,34,35],10,true);
             this.hpbar.animations.add('1',[36,37,38,39,40,41,42,44],10,true);
-            */
-            hpText = game.add.text(16, 16, 'HP : ' + hp, {
+            this.hpbar.frame = 0;
+            
+            hpText = game.add.text(100, 25, hp, {
                 fontSize: '20px',
                 fill: '#ed3465'
               });
             
-            scoreText = game.add.text(16, 45, 'SCORE : ' + score, {
+            scoreText = game.add.text(16, 55, 'SCORE : ' + score, {
                 fontSize: '20px',
                 fill: '#ed3465'
               });
@@ -236,23 +242,17 @@
                 }
             }
 
-            if (bulletGroup[0].alive){
-                console.log("bullet x: "+bulletGroup[0].x);
-            }
             
             if (bulletSize < 10) {
                 spawnBullet(player.x);
             }
             
-            console.log("Bullet Capacity"+bulletGroup.length);
             if (shootTime === 200) {
                 if (buttonX.isDown) {
                     if(buttonX.duration === 0){
-                        console.log("Push X before change: "+pushX);
                         if (!pushX) {
                             pushX = true;
                         }
-                        console.log("Push X after change: "+pushX);
                         
                         for(var i = 0; i < bulletGroup.length; i++){
                             //bulletGroup[i].x = this.player.x;
@@ -268,8 +268,6 @@
             for (var i = 0; i < bulletGroup.length; i++) {
                 if (pushX) {
                     if(bulletGroup[i].alive){
-                    
-                    console.log('bullet x : ' +bulletGroup[i].x);
                     if (cursorL) {
                         bulletGroup[i].body.velocity.x = -1000;
                         console.log('shoot L');
@@ -281,7 +279,6 @@
                         if (enemyGroup[j].alive) {
                             if(checkOverlap(enemyGroup[j],bulletGroup[i])){
                                 if (cOverlap) {
-                                    console.log('overlap enemy positionX : '+enemyGroup[j].x);
                                     bulletGroup[i].kill();
                                     enemyGroup[j].kill();
                                     console.log("shoot overlap");
@@ -298,7 +295,6 @@
                                     bulletGroup[i].kill();                                
                     }
                 }
-                    console.log(pushX);
                 }  
             }
             pushX = false;
@@ -315,7 +311,7 @@
             
             if (cursors.up.isDown) {
                 hp -= 1;
-                hpText.text = 'HP : ' + hp;
+                hpText.text = hp;
             }
             
 
@@ -353,18 +349,31 @@
                         explodeSound.play();
                         enemyGroup[i].kill();
                         hp -= 1;
-                        hpText.text = 'HP : ' + hp;
-                        /*if (hp === 16){
+                        hpText.text = hp;
+                        if (hp === 16){
                             this.hpbar.animations.play('5');
+                            this.hpbar.animations.stop('5');
+                            this.hpbar.frame = 8;
+                            this.tower.animations.play('1');
+                            this.tower.animations.stop('1');
+                            this.tower.frame = 11;
                         } else if (hp === 12){
                             this.hpbar.animations.play('4');
+                            this.hpbar.animations.stop('4');
+                            this.hpbar.frame = 17;
                         }else if (hp === 8){
                             this.hpbar.animations.play('3');
+                            this.hpbar.animations.stop('3');
+                            this.hpbar.frame = 26;
                         }else if (hp === 4){
                             this.hpbar.animations.play('2');
+                            this.hpbar.animations.stop('2');
+                            this.hpbar.frame = 35;
                         }else if (hp === 0){
                             this.hpbar.animations.play('1');
-                        }*/
+                            this.hpbar.animations.stop('1');
+                            this.hpbar.frame = 44;
+                        }
                         
                         }
                 }
